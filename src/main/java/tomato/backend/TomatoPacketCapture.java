@@ -2,15 +2,19 @@ package tomato.backend;
 
 import packets.Packet;
 import packets.data.QuestData;
+import packets.data.WorldPosData;
 import packets.incoming.*;
 import packets.outgoing.*;
 import tomato.backend.data.TomatoData;
 import tomato.gui.dps.DpsGUI;
 import tomato.gui.TomatoGUI;
+import tomato.gui.dungeons.DungeonGUI;
 import tomato.realmshark.Sound;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -24,10 +28,36 @@ public class TomatoPacketCapture implements Controller {
         this.data = data;
     }
 
+    private static final List<Class> ignored = new ArrayList<Class>(){
+        {
+            add(MapInfoPacket.class);
+            add(NewTickPacket.class);
+            add(UpdatePacket.class);
+            
+            add(NewCharacterInfoPacket.class); // player info
+            add(CreateSuccessPacket.class);
+            add(ExaltationUpdatePacket.class);
+
+            add(HelloPacket.class);
+            add(NotificationPacket.class);
+            add(VaultContentPacket.class);
+            
+            add(ServerPlayerShootPacket.class);
+            add(MovePacket.class);
+            add(WorldPosData.class);
+            add(PlayerShootPacket.class);
+
+            add(TextPacket.class); // chat
+        }
+    };
+
     /**
      * @param packet incoming packets to be processed.
      */
     public void packetCapture(Packet packet) {
+        if (!ignored.contains(packet.getClass()))
+            System.out.println("got packet " + packet);
+        
         if (packet instanceof MovePacket) {
             MovePacket p = (MovePacket) packet;
             data.updatePlayersPos(p);
@@ -40,6 +70,7 @@ public class TomatoPacketCapture implements Controller {
             UpdatePacket p = (UpdatePacket) packet;
             data.update(p);
             data.logPacket(packet);
+            DungeonGUI.getInstance().onUpdate(p);
         } else if (packet instanceof PlayerShootPacket) {
             PlayerShootPacket p = (PlayerShootPacket) packet;
             data.playerShoot(p);
@@ -79,6 +110,7 @@ public class TomatoPacketCapture implements Controller {
             MapInfoPacket p = (MapInfoPacket) packet;
             data.setNewRealm(p);
             data.logPacket(packet);
+            DungeonGUI.getInstance().onMapInfo(p);
         } else if (packet instanceof CreateSuccessPacket) {
             CreateSuccessPacket p = (CreateSuccessPacket) packet;
             data.setUserId(p.objectId, p.charId, p.str);

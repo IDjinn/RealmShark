@@ -77,7 +77,7 @@ public class ParsePanelGUI extends JPanel {
         copyToClipboard(String.valueOf(sb));
     }
 
-    private static void copyToClipboard(String s) {
+    public static void copyToClipboard(String s) {
         StringSelection stringSelection = new StringSelection(s);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(stringSelection, null);

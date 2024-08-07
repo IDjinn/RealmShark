@@ -101,7 +101,7 @@ public class CharacterPanelGUI extends JPanel {
      *
      * @return Left box to fill with components
      */
-    static JPanel createLeftBox() {
+    public static JPanel createLeftBox() {
         JPanel panel = new JPanel();
         panel.setMaximumSize(new Dimension(120, CHAR_PANEL_SIZE));
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));

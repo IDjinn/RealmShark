@@ -8,6 +8,7 @@ import tomato.gui.chat.ChatGUI;
 import tomato.gui.dps.DpsDisplayOptions;
 import tomato.gui.dps.DpsGUI;
 import tomato.gui.character.CharacterPanelGUI;
+import tomato.gui.dungeons.DungeonGUI;
 import tomato.gui.stats.DungeonStats;
 import tomato.gui.stats.StatisticsGUI;
 import tomato.gui.keypop.KeypopGUI;
@@ -40,7 +41,7 @@ public class TomatoGUI {
     private static MyInfoGUI myDmg;
     private static StatisticsGUI statistics;
     private JMenuBar jMenuBar;
-    private JPanel mainPanel, dpsPanel;
+    private JPanel mainPanel, dpsPanel, dungeonPanel;
     private TomatoMenuBar menuBar;
     private Point center;
     private Image icon;
@@ -77,6 +78,9 @@ public class TomatoGUI {
 
         dpsPanel = new DpsGUI(data);
         tabbedPane.addTab("DPS Logger", dpsPanel);
+
+        dungeonPanel = new DungeonGUI(data);
+        tabbedPane.addTab("Dungeon", dungeonPanel);
 
         center = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
         menuBar = new TomatoMenuBar();
