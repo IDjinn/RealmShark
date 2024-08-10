@@ -3,10 +3,11 @@ plugins {
     id 'application'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
-project.version = 'v1.6.11'
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
+
+version = 'v1.6.11'
 applicationName = 'Tomato'
 
 project.ext.lwjglVersion = "3.3.1"
@@ -23,18 +24,17 @@ switch (org.gradle.internal.os.OperatingSystem.current()) {
 
 repositories {
     mavenCentral()
-    maven {url="https://s01.oss.sonatype.org/content/repositories/snapshots/"}
+    maven { url = "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 dependencies {
-    implementation files("libs/RealmShark-v1.1.jar")
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.github.weisj:darklaf-core:3.0.2'
     implementation 'org.java-websocket:Java-WebSocket:1.5.3'
     implementation 'com.google.code.gson:gson:2.11.0'
 }
 
 mainClassName = applicationName.toLowerCase() + '.' + applicationName
-
 
 jar {
     manifest {
@@ -44,34 +44,9 @@ jar {
     }
 }
 
-// Ugly solution to get version into source.
-task generateSources {
-    doFirst {
-        def srcFile = new File(file("$buildDir/../src/main/java/" + applicationName.toLowerCase() + "/version"), "Version.java")
-        srcFile.parentFile.mkdirs()
-        srcFile.write("""package """ + applicationName.toLowerCase() + """.version;
-/**
- * Don't edit this class. It's a gradle class to grab version from the build.gradle
- */
-public class Version {
-    public static final String VERSION = "$project.version";
-}
-
-""")
-    }
-}
-compileJava.dependsOn generateSources
-compileJava.source generateSources.outputs.files, sourceSets.main.java
-
-/**
- * add to vm optoins
- * "-XstartOnFirstThread"
- */
 shadowJar {
     manifest {
         attributes 'Main-Class': mainClassName
     }
     archiveFileName = "${applicationName}-${project.version}.jar"
 }
-
-apply plugin: 'com.github.johnrengelman.shadow'
