@@ -40,6 +40,46 @@ dependencies {
     implementation 'com.google.flatbuffers:flatbuffers-java:23.5.26'
 }
 
+def buildVersionFile = file('build.version')
+if (!buildVersionFile.exists()) {
+    buildVersionFile.text = """\
+build-type=RELEASE
+version=1.0.0
+"""
+} else {
+    def buildProperties = new Properties()
+    buildVersionFile.withInputStream { stream ->
+        buildProperties.load(stream)
+    }
+    if (!buildProperties.containsKey('build-type')) {
+        buildProperties['build-type'] = 'RELEASE'
+    }
+    if (!buildProperties.containsKey('version')) {
+        buildProperties['version'] = '1.0.0'
+    }
+    buildVersionFile.withOutputStream { stream ->
+        buildProperties.store(stream, null)
+    }
+}
+
+def buildProperties = new Properties()
+buildVersionFile.withInputStream { stream ->
+    buildProperties.load(stream)
+}
+def buildType = buildProperties['build-type']
+def version = buildProperties['version']
+
+def buildNumberFile = file('build.number')
+def buildNumber = 0
+if (!buildNumberFile.exists()) {
+    buildNumberFile.text = '0'
+} else {
+    buildNumber = buildNumberFile.text.toInteger() + 1
+}
+buildNumberFile.text = buildNumber.toString()
+
+def gitCommitHash = 'git rev-parse --short HEAD'.execute().text.trim()
+
 tasks.withType(Jar) {
     manifest {
         attributes(
@@ -52,5 +92,5 @@ shadowJar {
     manifest {
         attributes 'Main-Class': application.mainClass.get()
     }
-    archiveFileName = "${applicationName}.jar"
+    archiveFileName = "${applicationName}-${version}-${buildType}-${buildNumber}-${gitCommitHash}.jar"
 }
