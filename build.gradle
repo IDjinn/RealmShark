@@ -1,29 +1,36 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
-project.version = 'v1.1'
-applicationName = 'RealmShark'
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
 
-project.ext.lwjglVersion = "3.3.1"
-project.ext.jomlVersion = "1.10.5"
+application {
+    mainClass.set('realmshark.RealmShark')
+}
 
+ext {
+    lwjglVersion = "3.3.1"
+    jomlVersion = "1.10.5"
+}
+
+def lwjglNatives
 switch (org.gradle.internal.os.OperatingSystem.current()) {
     case org.gradle.internal.os.OperatingSystem.MAC_OS:
-        project.ext.lwjglNatives = "natives-macos"
+        lwjglNatives = "natives-macos"
         break
     case org.gradle.internal.os.OperatingSystem.WINDOWS:
-        project.ext.lwjglNatives = "natives-windows"
+        lwjglNatives = "natives-windows"
         break
 }
 
 repositories {
     mavenCentral()
-    maven {url="https://s01.oss.sonatype.org/content/repositories/snapshots/"}
+    maven { url = "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 dependencies {
@@ -33,45 +40,17 @@ dependencies {
     implementation 'com.google.flatbuffers:flatbuffers-java:23.5.26'
 }
 
-mainClassName = applicationName.toLowerCase() + '.' + applicationName
-
-
-jar {
+tasks.withType(Jar) {
     manifest {
         attributes(
-                'Main-Class': mainClassName
+                'Main-Class': application.mainClass.get()
         )
     }
 }
 
-// Ugly solution to get version into source.
-task generateSources {
-    doFirst {
-        def srcFile = new File(file("$buildDir/../src/main/java/" + applicationName.toLowerCase() + "/version"), "Version.java")
-        srcFile.parentFile.mkdirs()
-        srcFile.write("""package """ + applicationName.toLowerCase() + """.version;
-/**
- * Don't edit this class. It's a gradle class to grab version from the build.gradle
- */
-public class Version {
-    public static final String VERSION = "$project.version";
-}
-
-""")
-    }
-}
-compileJava.dependsOn generateSources
-compileJava.source generateSources.outputs.files, sourceSets.main.java
-
-/**
- * add to vm optoins
- * "-XstartOnFirstThread"
- */
 shadowJar {
     manifest {
-        attributes 'Main-Class': mainClassName
+        attributes 'Main-Class': application.mainClass.get()
     }
-    archiveFileName = "${applicationName}-${project.version}.jar"
+    archiveFileName = "${applicationName}.jar"
 }
-
-apply plugin: 'com.github.johnrengelman.shadow'
