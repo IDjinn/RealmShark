@@ -56,7 +56,7 @@ public class TomatoPacketCapture implements Controller {
      */
     public void packetCapture(Packet packet) {
         if (!ignored.contains(packet.getClass()))
-            System.out.println("got packet " + packet);
+            System.out.println("[PACKET] ignored sd" + packet.getClass().getSimpleName());
         
         if (packet instanceof MovePacket) {
             MovePacket p = (MovePacket) packet;

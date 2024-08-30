@@ -80,7 +80,7 @@ public class TomatoGUI {
         tabbedPane.addTab("DPS Logger", dpsPanel);
 
         dungeonPanel = new DungeonGUI(data);
-        tabbedPane.addTab("Dungeon", dungeonPanel);
+       // tabbedPane.addTab("Dungeon", dungeonPanel);
 
         center = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
         menuBar = new TomatoMenuBar();

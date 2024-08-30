@@ -17,8 +17,8 @@ public class DungeonGUI extends JPanel {
         return INSTANCE;
     }
 
-    private TomatoData data;
-    private DungeonListGUI dungeonListGUI;
+    private final TomatoData data;
+    private final DungeonListGUI dungeonListGUI;
     
     private Dungeon currentDungeon;
 
@@ -28,9 +28,16 @@ public class DungeonGUI extends JPanel {
         this.data = data;
         this.dungeons = new ArrayList<>();
         this.dungeonListGUI = new DungeonListGUI(data);
-        add(this.dungeonListGUI);
+        this.add(this.dungeonListGUI);
         this.dungeonListGUI.setMissingCurrentDungeonInformation(true);
         this.updateRender();
+    }
+    
+    public static boolean isLoggedDungeon(String dungName) {
+        return switch (dungName) {
+            case "{s.vault}", "Daily Quest Room", "Pet Yard", "{s.guildhall}", "{s.nexus}", "Grand Bazaar" -> false;
+            default -> true;
+        };
     }
     
     private void updateRender(){
@@ -39,6 +46,9 @@ public class DungeonGUI extends JPanel {
     
     private void onDungeonExit(){
         if (this.currentDungeon == null) return;
+
+        if(!isLoggedDungeon(this.currentDungeon.getMapInfo().getDisplayName()))
+            return;
         
         this.dungeons.add(this.currentDungeon);
         this.currentDungeon = null;
@@ -58,6 +68,9 @@ public class DungeonGUI extends JPanel {
         if (this.currentDungeon != null) 
             this.onDungeonExit();
 
+        if(!isLoggedDungeon(mapInfoPacket.displayName))
+            return;
+        
         this.currentDungeon = new Dungeon(new MapInfo(mapInfoPacket));
         this.dungeonListGUI.setMissingCurrentDungeonInformation(false);
         System.out.println("[DUNGEON] updated to map: " + this.currentDungeon.getMapInfo().getName());
