@@ -5,6 +5,7 @@ import com.github.weisj.darklaf.theme.*;
 import packets.data.QuestData;
 import tomato.Tomato;
 import tomato.gui.chat.ChatGUI;
+import tomato.gui.chat.ChatPingGUI;
 import tomato.gui.dps.DpsDisplayOptions;
 import tomato.gui.dps.DpsGUI;
 import tomato.gui.character.CharacterPanelGUI;
@@ -35,6 +36,7 @@ public class TomatoGUI {
     private static String fontName = "Monospaced";
     private static JLabel statusLabel;
     private static JFrame frame;
+    private static ChatGUI chatPanel;
     private static SecurityGUI securityPanel;
     private static CharacterPanelGUI characterPanel;
     private static QuestGUI questPanel;
@@ -57,7 +59,8 @@ public class TomatoGUI {
     public void create() {
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        tabbedPane.addTab("Chat", new ChatGUI(data));
+        chatPanel = new ChatGUI(data);
+        tabbedPane.addTab("Chat", chatPanel);
 
         tabbedPane.addTab("Key-pops", new KeypopGUI());
 
@@ -67,7 +70,7 @@ public class TomatoGUI {
         characterPanel = new CharacterPanelGUI(data);
         tabbedPane.addTab("Characters", characterPanel);
 
-        statistics = new StatisticsGUI();
+        statistics = new StatisticsGUI(data);
         tabbedPane.addTab("Statistics", statistics);
 
         questPanel = new QuestGUI();
@@ -264,5 +267,12 @@ public class TomatoGUI {
      */
     public static JFrame getFrame() {
         return frame;
+    }
+
+    /**
+     * Opens chat message ping window.
+     */
+    public static void openChatPingMessage(){
+        ChatPingGUI.open(chatPanel);
     }
 }
