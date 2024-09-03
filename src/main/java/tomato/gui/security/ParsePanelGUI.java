@@ -113,6 +113,7 @@ public class ParsePanelGUI extends JPanel {
             String[] split = f.split("§");
             for (String s : split) {
                 SecurityFilter sf = SecurityFilter.loadJson(s);
+                if (sf == null) continue;
                 filters.put(sf.name, sf);
                 filterComboBox.addItem(sf.name);
             }
@@ -259,7 +260,6 @@ public class ParsePanelGUI extends JPanel {
         }
 
         int point = 0;
-        System.out.println(skinId);
         for (int eid : exaltedSkinIds) {
             if (skinId == eid) {
                 point += currentFilter.exaltSkinPoints;
